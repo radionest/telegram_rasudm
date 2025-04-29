@@ -57,7 +57,7 @@ async def parse_phone_list(
     dowloaded_file = await bot.download_file(file_path=phones_list_file.file_path)
 
     try:
-        added_phones = await add_phones_from_file(dowloaded_file)
+        added_phones = await add_phones_from_file(dowloaded_file, db_manager)
     except:
         logger.warning(f'Error in extracting phones from file {message.document.file_name}')
         await message.answer("При обработке файла возникла ошибка.")

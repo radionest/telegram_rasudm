@@ -42,7 +42,7 @@ async def ask_to_register(message: Message, state: FSMContext) -> None:
 
 @router.message(RegisterUser.wait_agreement, F.contact)
 async def register_user(
-    message: Message, state: FSMContext, db_manager: DatabaseManager
+    message: Message, state: FSMContext, db_manager: DatabaseManager, bot: Bot
 ) -> None:
     """Register user"""
     phone = int(message.contact.phone_number[-10:])
@@ -72,21 +72,23 @@ async def register_user(
         await state.set_state(RegisterUser.waiting_phone_changed_user)
         return
     else:
-        await answer_registration_succes(message, state)
+        await answer_registration_succes(message, state, db_manager, bot)
 
 
 @router.message(RegisterUser.waiting_phone_changed_user)
-async def renew_user_phone(message: Message, state: FSMContext):
-    match message:
+async def renew_user_phone(
+    message: Message, state: FSMContext, db_manager: DatabaseManager, bot: Bot
+):
+    match message.text:
         case "Да":
-            await answer_registration_succes(message, state)
+            await answer_registration_succes(message, state, db_manager, bot)
         case "Нет":
             await message.answer(
                 "Хорошо. Вы можете продолжать пользоваться группой с ранее зарегистрированного аккаунта."
             )
         case _:
             await message.answer("Вы должны ответить либо **Да**, либо **Нет**.")
-    state.clear()
+    await state.clear()
 
 
 @router.chat_join_request()
@@ -94,7 +96,7 @@ async def approve_chat_join_request(
     update: ChatJoinRequest, bot: Bot, db_manager: DatabaseManager
 ):
     target_group = await db_manager.get_target_channel()
-    if update.chat.id != target_group.id:
+    if update.chat.id != target_group[0].id:
         return
     try:
         await approve_user_invite(

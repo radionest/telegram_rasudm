@@ -30,8 +30,7 @@ async def save_group(event: ChatMemberUpdated, db_manager: DatabaseManager):
 
 
 @router.my_chat_member(
-    ChatMemberUpdatedFilter(member_status_changed=IS_MEMBER>>IS_NOT_MEMBER)
+    ChatMemberUpdatedFilter(member_status_changed=IS_MEMBER >> IS_NOT_MEMBER)
 )
 async def delete_group(event: ChatMemberUpdated, db_manager: DatabaseManager):
     await db_manager.delete_channel(event.chat.id)
-
