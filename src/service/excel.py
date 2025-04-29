@@ -1,14 +1,16 @@
+from typing import List
 from loguru import logger
 import re
 from openpyxl import load_workbook
 
 from database import DatabaseManager
+from models import PhoneWhiteList
 
 
 class ExcelParsingError(Exception): ...
 
 
-def parse_phone_number(phone: str | int):
+def parse_phone_number(phone: str | int) -> str | None:
     if isinstance(phone, int):
         phone = str(phone)
     if phone_match := re.match(r"[78]?(9\d*)", phone):
@@ -17,7 +19,7 @@ def parse_phone_number(phone: str | int):
         return None
 
 
-def get_phones_whitelist_from_xls(file):
+def get_phones_whitelist_from_xls(file) -> List[str]:
     wb = load_workbook(file)
     first_sheet = wb.worksheets[0]
     for column in first_sheet.iter_cols(max_col=first_sheet.max_column):
@@ -30,7 +32,9 @@ def get_phones_whitelist_from_xls(file):
     raise ExcelParsingError("Cant find phones in provided excel files")
 
 
-async def add_phones_from_file(file, db_manager: DatabaseManager):
+async def add_phones_from_file(
+    file, db_manager: DatabaseManager
+) -> List[PhoneWhiteList]:
     numbers_in_file = get_phones_whitelist_from_xls(file)
     errors = []
     phones_added = []

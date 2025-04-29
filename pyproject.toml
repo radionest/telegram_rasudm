@@ -58,7 +58,7 @@ disallow_untyped_decorators = true
 no_implicit_optional = true
 strict_optional = true
 exclude = "tests"
-
+mypy_path = "src"
 explicit_package_bases = true
 
 
