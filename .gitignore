@@ -21,4 +21,4 @@ alembic/__pycache__/env.cpython-312.pyc
 alembic/versions/*
 *.pyc
 telegram_group_manager.db
-
+logs/
