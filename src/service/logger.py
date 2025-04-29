@@ -45,7 +45,7 @@ class InterceptHandler(logging.Handler):
         logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
 
 
-def setup_logging(level: LogLevels = "INFO") -> None:
+def setup_logging(level: LogLevels = "INFO"):
     """
     Set up application logging configuration.
 
@@ -82,4 +82,3 @@ def setup_logging(level: LogLevels = "INFO") -> None:
 
     # Log startup message
     logger.info("Logging system initialized")
-    return logger
