@@ -1,6 +1,6 @@
 from pydantic_settings import BaseSettings
 
-from bot_types import LogLevels
+from src.custom_types import LogLevels
 
 class Settings(BaseSettings):
     BOT_TOKEN: str

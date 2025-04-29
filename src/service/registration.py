@@ -9,7 +9,7 @@ from database import DatabaseManager
 
 
 async def answer_registration_succes(message: Message, state: FSMContext, db_manager: DatabaseManager, bot: Bot):
-    target_group = await db_manager.find_target_chanel()
+    target_group = await db_manager.get_target_channel()
     link_to_group = await create_invite_link(
         bot=bot, 
         group_id=target_group[0].id

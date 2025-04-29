@@ -102,12 +102,12 @@ class DatabaseManager:
             await session.refresh(user)
             return user
 
-    async def add_chanel(self, chanel_id: int) -> TelegramGroup:
+    async def add_channel(self, channel_id: int) -> TelegramGroup:
         """
         Add a new Telegram channel or group to the database.
 
         Args:
-            chanel_id: The Telegram channel/group ID
+            channel_id: The Telegram channel/group ID
 
         Returns:
             TelegramGroup: The newly created channel record
@@ -117,18 +117,18 @@ class DatabaseManager:
             >>> print(f"Added channel {channel.id}")
         """
         async with AsyncSession(self.engine) as session:
-            chanel = TelegramGroup(id=chanel_id)
-            session.add(chanel)
+            channel = TelegramGroup(id=channel_id)
+            session.add(channel)
             await session.commit()
-            await session.refresh(chanel)
-            return chanel
+            await session.refresh(channel)
+            return channel
 
-    async def delete_chanel(self, chanel_id: int) -> TelegramGroup:
+    async def delete_channel(self, channel_id: int) -> TelegramGroup:
         """
         Delete a Telegram channel or group from the database.
 
         Args:
-            chanel_id: The Telegram channel/group ID
+            channel_id: The Telegram channel/group ID
 
         Returns:
             TelegramGroup: The deleted channel record
@@ -138,13 +138,13 @@ class DatabaseManager:
             >>> print(f"Deleted channel {deleted.id}")
         """
         async with AsyncSession(self.engine) as session:
-            chanel = TelegramGroup(id=chanel_id)
-            await session.delete(chanel)
+            channel = TelegramGroup(id=channel_id)
+            await session.delete(channel)
             await session.commit()
-            await session.refresh(chanel)
-            return chanel
+            await session.refresh(channel)
+            return channel
 
-    async def get_registered_chanels(self) -> Sequence[TelegramGroup]:
+    async def get_registered_channels(self) -> Sequence[TelegramGroup]:
         """
         Get all registered Telegram channels and groups.
 
@@ -152,33 +152,34 @@ class DatabaseManager:
             Sequence[TelegramGroup]: A sequence of all registered channels
 
         Examples:
-            >>> channels = await db_manager.get_registered_chanels()
+            >>> channels = await db_manager.get_registered_channels()
             >>> for channel in channels:
             ...     print(f"Channel ID: {channel.id}, Target: {channel.target}")
         """
         async with AsyncSession(self.engine) as session:
             query = select(TelegramGroup)
-            chanel = await session.exec(query)
-            return chanel.all()
+            channel = await session.exec(query)
+            return channel.all()
 
-    async def find_target_chanel(self) -> Sequence[TelegramGroup]:
+    async def get_target_channel(self) -> Sequence[TelegramGroup]:
         """
         Find the target channel (the channel the bot is currently managing).
+
 
         Returns:
             Sequence[TelegramGroup]: A sequence containing the target channel
 
         Examples:
-            >>> target_channels = await db_manager.find_target_chanel()
+            >>> target_channels = await db_manager.get_target_chanel()
             >>> if target_channels:
             ...     print(f"Target channel ID: {target_channels[0].id}")
         """
         async with AsyncSession(self.engine) as session:
             query = select(TelegramGroup).where(TelegramGroup.target == True)  # noqa: E712, E501
-            chanel = await session.exec(query)
-            return chanel.all()
+            channel = await session.exec(query)
+            return channel.all()
 
-    async def make_chanel_target(self, chanel_id: int) -> TelegramGroup:
+    async def make_channel_target(self, channel_id: int) -> TelegramGroup:
         """
         Set a specific channel as the target channel for the bot.
 
@@ -196,20 +197,20 @@ class DatabaseManager:
             >>> print(f"Set channel {target.id} as target")
         """
         async with AsyncSession(self.engine) as session:
-            target_chanel = await self.find_target_chanel()
+            target_chanel = await self.get_target_channel()
             for c in target_chanel:
                 c.target = False
                 session.add(c)
 
-            chanel = await session.get(TelegramGroup, chanel_id)
-            if chanel is None:
+            channel = await session.get(TelegramGroup, channel_id)
+            if channel is None:
                 raise ItemNotFoundException(
-                    f"Cant find group with id {chanel_id} in database!"
+                    f"Cant find group with id {channel_id} in database!"
                 )
-            chanel.target = True
+            channel.target = True
             await session.commit()
-            await session.refresh(chanel)
-            return chanel
+            await session.refresh(channel)
+            return channel
 
     async def make_admin(self, user_id: int) -> User:
         """

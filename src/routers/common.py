@@ -26,12 +26,12 @@ async def cmd_start(message: Message, state: FSMContext, user: User, bot: Bot) -
     ChatMemberUpdatedFilter(member_status_changed=IS_NOT_MEMBER >> IS_MEMBER)
 )
 async def save_group(event: ChatMemberUpdated, db_manager: DatabaseManager):
-    await db_manager.add_chanel(event.chat.id)
+    await db_manager.add_channel(event.chat.id)
 
 
 @router.my_chat_member(
     ChatMemberUpdatedFilter(member_status_changed=IS_MEMBER>>IS_NOT_MEMBER)
 )
 async def delete_group(event: ChatMemberUpdated, db_manager: DatabaseManager):
-    await db_manager.delete_chanel(event.chat.id)
+    await db_manager.delete_channel(event.chat.id)
 

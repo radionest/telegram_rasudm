@@ -14,7 +14,7 @@ import inspect
 
 from models import MOSCOW_TZ
 from settings import settings
-from bot_types import LogLevels
+from src.custom_types import LogLevels
 # Define log directory
 
 os.makedirs(settings.LOG_DIR, exist_ok=True)

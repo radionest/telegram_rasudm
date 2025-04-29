@@ -26,10 +26,10 @@ def get_phones_whitelist_from_xls(file) -> List[str]:
         if column[0].value == "Телефон":
             return [
                 phone_num
-                for p in column[1:]
-                if (phone_num := parse_phone_number(p.value)) is not None
+                for cell in column[1:]
+                if (phone_num := parse_phone_number(cell.value)) is not None
             ]
-    raise ExcelParsingError("Cant find phones in provided excel files")
+    raise ExcelParsingError("Cannot find phone column in the provided Excel file.")
 
 
 async def add_phones_from_file(

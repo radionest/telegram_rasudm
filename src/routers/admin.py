@@ -53,8 +53,8 @@ async def parse_phone_list(
     """
     file_id = message.document.file_id
 
-    phones_file = await bot.get_file(file_id)
-    dowloaded_file = await bot.download_file(file_path=phones_file.file_path)
+    phones_list_file = await bot.get_file(file_id)
+    dowloaded_file = await bot.download_file(file_path=phones_list_file.file_path)
 
     try:
         added_phones = await add_phones_from_file(dowloaded_file)
@@ -96,6 +96,6 @@ async def select_target_group(
     Sets the selected group as the target for bot administration
     based on the admin's selection.
     """
-    await db_manager.make_chanel_target(int(callback.data))
+    await db_manager.make_channel_target(int(callback.data))
     await callback.answer(text="Целевая группа для администрирования изменена.")
     await state.clear()

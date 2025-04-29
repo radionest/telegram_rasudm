@@ -20,7 +20,7 @@ from filters import FilterIsNotRegistered
 
 
 router = Router()
-db = DatabaseManager()
+db_manager = DatabaseManager()
 
 
 @router.message(FilterIsNotRegistered())
@@ -93,7 +93,7 @@ async def renew_user_phone(message: Message, state: FSMContext):
 async def approve_chat_join_request(
     update: ChatJoinRequest, bot: Bot, db_manager: DatabaseManager
 ):
-    target_group = await db_manager.find_target_chanel()
+    target_group = await db_manager.get_target_channel()
     if update.chat.id != target_group.id:
         return
     try:

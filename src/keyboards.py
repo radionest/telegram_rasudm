@@ -71,7 +71,7 @@ async def get_select_group_kb(
     Returns:
         InlineKeyboardMarkup: The inline keyboard with group selection buttons
     """
-    chanels = await db_manager.get_registered_chanels()
+    chanels = await db_manager.get_registered_channels()
     registered_groups = [await bot.get_chat(chat_id=channel.id) for channel in chanels]
     group_buttons = [
         [

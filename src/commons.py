@@ -9,7 +9,7 @@ def get_date_w_offset(days: int = 0) -> date:
     return datetime.now(MOSCOW_TZ).date() + timedelta(days=days)
 
 
-todayMoscow = partial(get_date_w_offset, days=0)
+today_moscow = partial(get_date_w_offset, days=0)
 
 TEXT_CALL_ADMIN = """
 Произошло что-то непредвиденное. Мы уже пытаемся решить эту проблему, но это займет время.
