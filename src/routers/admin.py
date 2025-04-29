@@ -5,11 +5,9 @@ This module provides administrative functionality for the bot, including
 user management, channel management, and phone whitelist operations.
 The router has filters to ensure only administrators can access these functions.
 """
-
-from typing import overload, Optional
 from aiogram import Router, F, Bot
 from aiogram.types import Message, CallbackQuery, ContentType
-from aiogram.filters import Command, StateFilter
+from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from loguru import logger
 
