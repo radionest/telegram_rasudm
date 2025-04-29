@@ -1,10 +1,8 @@
 from loguru import logger
 import re
 from openpyxl import load_workbook
-import io
-from aiogram.types import Document
 
-from database import DatabaseManager, DatabaseError
+from database import DatabaseManager
 
 
 class ExcelParsingError(Exception): ...
