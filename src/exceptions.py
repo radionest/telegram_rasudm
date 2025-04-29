@@ -1,6 +1,3 @@
-class NotFound(Exception):
-    ...
-
 class UltrabotError(Exception):
     ...
 

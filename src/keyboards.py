@@ -11,7 +11,7 @@ from aiogram import Bot
 from database import DatabaseManager
 
 
-async def create_menu(bot: Bot, user_id: int, is_admin: bool):
+async def create_menu(bot: Bot, user_id: int, is_admin: bool) -> None:
     command_list = [
         BotCommand(command="/help", description="Помощь"),
         BotCommand(command="/grouplink", description="Получить ссылку на группу"),

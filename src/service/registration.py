@@ -3,9 +3,8 @@ from aiogram.types import Message, ReplyKeyboardRemove
 from aiogram.fsm.context import FSMContext
 
 from models import PhoneWhiteListRead
-from exceptions import NotFound
+from database import ItemNotFoundException
 from service.telegroup import create_invite_link
-from settings import settings
 from database import DatabaseManager
 
 
@@ -33,5 +32,5 @@ async def is_phone_in_whitelist(phone: int, db_manager: DatabaseManager):
 async def is_another_user_registered(phone: int, db_manager: DatabaseManager):
     phone: PhoneWhiteListRead | None = await db_manager.get_phone(phone)
     if not phone:
-        raise NotFound(f"Cant find phone {phone}")
+        raise ItemNotFoundException(f"Cant find phone {phone}")
     return phone.user is not None
