@@ -1,15 +1,10 @@
-from datetime import date, datetime, time
-
 from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy.orm import sessionmaker, selectinload
-from sqlalchemy.exc import IntegrityError
-from contextlib import asynccontextmanager
-from typing import Union, Sequence, Tuple, AsyncGenerator, overload
-from sqlmodel import select, func
+from typing import Union, Sequence
+from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
-from settings import settings
 
-from models import User, PhoneWhiteList, Chanel
+from settings import settings
+from models import User, PhoneWhiteList, TelegramGroup
 
 
 class DatabaseError(Exception): ...
@@ -27,7 +22,7 @@ class DatabaseManager:
             result = await session.get(User, user_id)
             return result
 
-    async def add_user(self, user_id: int):
+    async def add_user(self, user_id: int) -> User:
         async with AsyncSession(self.engine) as session:
             user = User(id=user_id)
             session.add(user)
@@ -37,7 +32,7 @@ class DatabaseManager:
 
     async def add_chanel(self, chanel_id: int):
         async with AsyncSession(self.engine) as session:
-            chanel = Chanel(id=chanel_id)
+            chanel = TelegramGroup(id=chanel_id)
             session.add(chanel)
             await session.commit()
             await session.refresh(chanel)
@@ -45,7 +40,7 @@ class DatabaseManager:
 
     async def delete_chanel(self, chanel_id: int):
         async with AsyncSession(self.engine) as session:
-            chanel = Chanel(id=chanel_id)
+            chanel = TelegramGroup(id=chanel_id)
             await session.delete(chanel)
             await session.commit()
             await session.refresh(chanel)
@@ -53,13 +48,13 @@ class DatabaseManager:
 
     async def get_registered_chanels(self):
         async with AsyncSession(self.engine) as session:
-            query = select(Chanel)
+            query = select(TelegramGroup)
             chanel = await session.exec(query)
             return chanel.all()
 
     async def find_target_chanel(self):
         async with AsyncSession(self.engine) as session:
-            query = select(Chanel).where(Chanel.target == True)
+            query = select(TelegramGroup).where(TelegramGroup.target == True)
             chanel = await session.exec(query)
             return chanel.all()
 
@@ -69,8 +64,8 @@ class DatabaseManager:
             for c in target_chanel:
                 c.target = False
                 session.add(c)
-            
-            chanel = await session.get(Chanel, chanel_id)
+
+            chanel = await session.get(TelegramGroup, chanel_id)
             chanel.target = True
             await session.commit()
             await session.refresh(chanel)

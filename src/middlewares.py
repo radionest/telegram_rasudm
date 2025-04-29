@@ -5,7 +5,6 @@ from aiogram.dispatcher.middlewares.data import MiddlewareData
 from aiogram.types import Message, CallbackQuery
 
 from database import DatabaseManager
-from states import RegisterUser
 from models import User
 
 
@@ -68,39 +67,3 @@ class GetUserMiddleware(BaseMiddleware):
         return await handler(event, data)
         
 
-
-class RegisterFirstMiddleware(BaseMiddleware):
-    """
-    Middleware that handles user registration and activation status.
-
-    This middleware checks if the user exists and is active in the system.
-    If the user doesn't exist, it sets the state to registration.
-    If the user exists but is not active, it sets the state to activation.
-    """
-
-    def __init__(self, db_manager: DatabaseManager) -> None:
-        """
-        Initialize the middleware with a database manager.
-
-        Args:
-            db: Database manager instance used to fetch user data
-        """
-        self.db = db_manager
-        super().__init__()
-
-    async def __call__(
-        self,
-        handler: Callable[  # type: ignore
-            [Union[Message, CallbackQuery], UserMiddlewareData], Awaitable[Any]
-        ],
-        event: Message | CallbackQuery,  # type: ignore
-        data: UserMiddlewareData,  # type: ignore
-    ) -> Any:
-        user = data["user"]
-        state = await data["state"].get_state()
-        if state in RegisterUser:
-            return await handler(event, data)            
-        if not user or not user.is_active:
-            await data["state"].set_state(RegisterUser.need_registration)
-
-        return await handler(event, data)
