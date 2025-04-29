@@ -11,7 +11,7 @@ from models import User
 class UserMiddlewareData(MiddlewareData):
     """Class for middleware data injection."""
 
-    user: User
+    user: User | None
 
 
 class GetUserMiddleware(BaseMiddleware):
@@ -63,7 +63,5 @@ class GetUserMiddleware(BaseMiddleware):
             data["user"] = user
         else:
             data["user"] = None
-        
-        return await handler(event, data)
-        
 
+        return await handler(event, data)
