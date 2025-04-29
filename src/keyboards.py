@@ -1,20 +1,12 @@
-from typing import overload
-from uuid import uuid4
-from datetime import time, timedelta, datetime
 from aiogram.types import (
     InlineKeyboardMarkup,
     InlineKeyboardButton,
     ReplyKeyboardMarkup,
     KeyboardButton,
-    CallbackQuery,
     BotCommandScopeChat,
     BotCommand,
 )
 from aiogram import Bot
-from aiogram.methods import get_chat
-from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
-from datetime import datetime, timedelta
-from typing import List, Dict, Optional, Iterable
 
 from database import DatabaseManager
 
@@ -37,16 +29,15 @@ async def create_menu(bot: Bot, user_id: int, is_admin: bool):
     await bot.set_my_commands(commands=command_list, scope=scope)
 
 
-async def get_select_group_kb(db_manager: DatabaseManager, bot: Bot) -> InlineKeyboardMarkup:
-    chanels =  await db_manager.get_registered_chanels()
-    registered_groups = [
-        await bot.get_chat(chat_id=channel.id)
-         for channel in chanels 
-    ]
+async def get_select_group_kb(
+    db_manager: DatabaseManager, bot: Bot
+) -> InlineKeyboardMarkup:
+    chanels = await db_manager.get_registered_chanels()
+    registered_groups = [await bot.get_chat(chat_id=channel.id) for channel in chanels]
     group_buttons = [
         [
             InlineKeyboardButton(text=group.full_name, callback_data=str(group.id))
-             for group in registered_groups
+            for group in registered_groups
         ]
     ]
 
