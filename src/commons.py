@@ -5,13 +5,15 @@ from functools import partial
 from models import MOSCOW_TZ
 
 
-def get_date_w_offset(days:int=0) -> date:
+def get_date_w_offset(days: int = 0) -> date:
     return datetime.now(MOSCOW_TZ).date() + timedelta(days=days)
 
-todayMoscow = partial(get_date_w_offset,days=0)  
+
+todayMoscow = partial(get_date_w_offset, days=0)
 
 TEXT_CALL_ADMIN = """
-CALL ADMIN TEXT
+Произошло что-то непредвиденное. Мы уже пытаемся решить эту проблему, но это займет время.
+Если у вас не получилось зарегистрироваться и остались какие-либо вопросы обратитесь к @dr_bayramova
 """
 
 TEXT_AGREEMENT = """
@@ -32,4 +34,3 @@ TEXT_AGREEMENT = """
 
 @dr_bayramova
 """
-
