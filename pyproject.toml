@@ -12,7 +12,8 @@ dependencies = ["python-dotenv>=1.0.1",
                 "pydantic-settings>=2.7.1", 
                 "aiosqlite>=0.21.0",
                 "openpyxl",
-                "loguru"
+                "loguru", 
+                "tzdata"
                 ]
 requires-python = "==3.12.*"
 readme = "README.md"
@@ -57,6 +58,8 @@ disallow_untyped_decorators = true
 no_implicit_optional = true
 strict_optional = true
 exclude = "tests"
+
+explicit_package_bases = true
 
 
 [tool.flake8]
