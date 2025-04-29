@@ -1,5 +1,4 @@
 from sqlmodel import SQLModel, Field, Relationship, Column
-from pydantic import conint
 from sqlalchemy import DateTime
 from typing import Optional
 from datetime import datetime
@@ -8,9 +7,6 @@ from zoneinfo import ZoneInfo
 
 # Define Moscow timezone for use across the application
 MOSCOW_TZ = ZoneInfo("Europe/Moscow")
-
-# Custom type for Russian phone numbers (starting with 9)
-PhoneType = conint(gt=9000000000, lt=9999999999)
 
 
 class UserBase(SQLModel):
@@ -61,6 +57,7 @@ class User(UserBase, table=True):
 
     time_registered: datetime = Field(default_factory=lambda: datetime.now(MOSCOW_TZ))
     time_updated: datetime = Field(
+        default_factory=lambda: datetime.now(MOSCOW_TZ),
         sa_column=Column(
             DateTime(timezone=False), onupdate=lambda: datetime.now(MOSCOW_TZ)
         )
@@ -74,7 +71,6 @@ class UserRead(UserBase):
     This model is used for API responses and data transfer without exposing
     database-specific attributes.
     """
-
     ...
 
 
@@ -89,7 +85,7 @@ class PhoneWhiteListBase(SQLModel):
         phone: The whitelisted phone number (must be a valid Russian mobile number)
     """
 
-    phone: PhoneType
+    phone: int = Field(gt=9000000000, lt=9999999999)
 
 
 class PhoneWhiteList(PhoneWhiteListBase, table=True):
@@ -105,7 +101,7 @@ class PhoneWhiteList(PhoneWhiteListBase, table=True):
         user: Relationship to the User model
     """
 
-    phone: PhoneType = Field(primary_key=True)
+    phone: int = Field(primary_key=True, gt=9000000000, lt=9999999999)
 
     user: User = Relationship(back_populates="phone")
 
