@@ -14,6 +14,7 @@ from loguru import logger
 from filters import admin_only
 from database import DatabaseManager
 from service.excel import add_phones_from_file
+from service.registration import user_id_str_to_int
 import keyboards as kb
 import states
 
@@ -58,14 +59,16 @@ async def parse_phone_list(
 
     try:
         added_phones = await add_phones_from_file(dowloaded_file, db_manager)
-    except:
+    except Exception as e:
         logger.warning(f'Error in extracting phones from file {message.document.file_name}')
+        logger.warning(e)
         await message.answer("При обработке файла возникла ошибка.")
+    else:
+        await message.answer(f"В базу данных добавлено {len(added_phones)} телефонов.")
     finally:
         dowloaded_file.close()
 
-    await message.answer(f"В базу данных добавлено {len(added_phones)} телефонов.")
-
+    
 
 @router.message(Command("select_group"))
 async def ask_to_select_target_group(
@@ -99,3 +102,16 @@ async def select_target_group(
     await db_manager.make_channel_target(int(callback.data))
     await callback.answer(text="Целевая группа для администрирования изменена.")
     await state.clear()
+
+@router.message(Command('add_admin'))
+async def add_admin_start(message: Message, state: FSMContext):
+    await state.set_state(states.AddAdmin.user_id_recieved)
+    await message.answer("Введите ID пользователя, которого хотите сделать администратором.")
+    
+@router.message(states.AddAdmin.user_id_recieved)
+async def add_admin(message: Message, state: FSMContext):
+    try:
+        await user_id_str_to_int(message.text)
+    except ValueError: 
+        await message.answer('Введенный id должен быть числовым.')
+        await state.set_state(states.AddAdmin.user_id_recieved)

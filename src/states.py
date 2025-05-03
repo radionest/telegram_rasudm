@@ -17,3 +17,6 @@ class EditActivePhones(StatesGroup):
 
 class TargetGroupSelection(StatesGroup):
     target_selected = State()
+
+class AddAdmin(StatesGroup):
+    user_id_recieved = State()

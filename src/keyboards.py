@@ -47,6 +47,10 @@ async def create_menu(bot: Bot, user_id: int, is_admin: bool) -> None:
                 BotCommand(
                     command="/select_group",
                     description="Выбрать группу или канал за доступ к которой отвечает бот.",
+                ),
+                BotCommand(
+                    command="/add_admin",
+                    description="Добавить администратора чата.",
                 )
             ]
         )

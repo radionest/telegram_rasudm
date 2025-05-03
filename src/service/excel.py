@@ -40,9 +40,9 @@ async def add_phones_from_file(
     phones_added = []
     for phone_number in numbers_in_file:
         try:
-            phones_added += await db_manager.add_phone(phone_number[-10:])
+            phones_added += await db_manager.add_phone(int(phone_number[-10:]))
         except Exception as e:
-            errors += e
+            errors.append(str(e))
     if errors:
         logger.warning(f"""{len(errors)} happend during parsing incoming phone list. \n
                        {"\n".join(set(errors))}

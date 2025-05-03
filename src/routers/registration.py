@@ -10,9 +10,11 @@ from exceptions import RestrictedAccessError
 from states import RegisterUser
 from keyboards import get_agreement_kb
 from service.registration import (
+    register_user_and_answer,
     answer_registration_succes,
     is_another_user_registered,
     is_phone_in_whitelist,
+    bind_phone_to_user,
 )
 from service.telegroup import approve_user_invite
 from commons import TEXT_CALL_ADMIN, TEXT_AGREEMENT
@@ -20,7 +22,8 @@ from filters import FilterIsNotRegistered
 
 
 router = Router()
-db_manager = DatabaseManager()
+
+router.message.filter(F.chat.type == "private")
 
 
 @router.message(FilterIsNotRegistered())
@@ -72,7 +75,8 @@ async def register_user(
         await state.set_state(RegisterUser.waiting_phone_changed_user)
         return
     else:
-        await answer_registration_succes(message, state, db_manager, bot)
+        await bind_phone_to_user(user_id, phone, db_manager)
+        await register_user_and_answer(message, state, db_manager, bot)
 
 
 @router.message(RegisterUser.waiting_phone_changed_user)
@@ -81,7 +85,7 @@ async def renew_user_phone(
 ):
     match message.text:
         case "Да":
-            await answer_registration_succes(message, state, db_manager, bot)
+            await register_user_and_answer(message, state, db_manager, bot)
         case "Нет":
             await message.answer(
                 "Хорошо. Вы можете продолжать пользоваться группой с ранее зарегистрированного аккаунта."

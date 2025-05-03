@@ -11,9 +11,12 @@ Attributes:
 """
 
 from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.orm import selectinload
+from sqlalchemy.exc import IntegrityError
 from typing import Union, Sequence
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
+from loguru import logger
 
 from settings import settings
 from models import User, PhoneWhiteList, TelegramGroup
@@ -98,6 +101,23 @@ class DatabaseManager:
         async with AsyncSession(self.engine) as session:
             user = User(id=user_id)
             session.add(user)
+            try:
+                await session.commit()
+            except IntegrityError as e:
+                logger.warning(e)
+                return user
+            await session.refresh(user)
+            return user
+
+    async def bind_phone_to_user(self, user_id: int, phone_num: int) -> User:
+        async with AsyncSession(self.engine) as session:
+            user = await session.get(User, user_id)
+            phone = await session.get(PhoneWhiteList, phone_num)
+            if not phone:
+                raise ItemNotFoundException("There is no phone {phone_num} in database")
+            if not user:
+                user = await self.add_user(user_id)
+            user.phone = phone
             await session.commit()
             await session.refresh(user)
             return user
@@ -406,7 +426,10 @@ class DatabaseManager:
             ...         print(f"Associated with user {phone.user.id}")
         """
         async with AsyncSession(self.engine) as session:
-            return await session.get(PhoneWhiteList, phone_num)
+            phone = await session.get(
+                PhoneWhiteList, phone_num, options=[selectinload(PhoneWhiteList.user)]
+            )
+            return phone
 
     async def add_phone(self, phone_num: int) -> PhoneWhiteList:
         """
@@ -425,6 +448,6 @@ class DatabaseManager:
         async with AsyncSession(self.engine) as session:
             phone = PhoneWhiteList(phone=phone_num)
             session.add(phone)
-            await session.refresh(phone)
             await session.commit()
+            await session.refresh(phone)
         return phone
