@@ -136,7 +136,7 @@ async def delete_user(message: Message, state: FSMContext, db_manager: DatabaseM
 
 @router.message(Command("add_phone_to_whitelist"))
 async def add_phone_start(message: Message, state: FSMContext):
-    await state.set_state(states.DeleteUser.user_id_recieved)
+    await state.set_state(states.AddPhone)
     await message.answer("Введите номер телефона пользователя.")
 
 
