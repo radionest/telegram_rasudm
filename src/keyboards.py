@@ -146,11 +146,9 @@ def get_cancel_kb() -> ReplyKeyboardMarkup:
     return ReplyKeyboardMarkup(
         keyboard=[
             [
-                KeyboardButton(text="Согласен", request_contact=True),
-                KeyboardButton(text="Не согласен"),
+                KeyboardButton(text="Отмена")
             ]
         ],
         one_time_keyboard=True,
-        resize_keyboard=True,
-        is_persistent=True,
+        resize_keyboard=True
     )
