@@ -126,3 +126,31 @@ def get_agreement_kb() -> ReplyKeyboardMarkup:
         resize_keyboard=True,
         is_persistent=True,
     )
+
+
+
+def get_cancel_kb() -> ReplyKeyboardMarkup:
+    """
+    Create a reply keyboard for user agreement confirmation.
+
+    Creates a keyboard with two buttons: one to agree and share contact information,
+    and another to decline. This keyboard is used during the user registration process
+    to obtain consent for phone number verification.
+
+    Args:
+        None
+
+    Returns:
+        ReplyKeyboardMarkup: A keyboard with agree/disagree buttons
+    """
+    return ReplyKeyboardMarkup(
+        keyboard=[
+            [
+                KeyboardButton(text="Согласен", request_contact=True),
+                KeyboardButton(text="Не согласен"),
+            ]
+        ],
+        one_time_keyboard=True,
+        resize_keyboard=True,
+        is_persistent=True,
+    )

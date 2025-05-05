@@ -149,4 +149,3 @@ async def add_phone(message: Message, state: FSMContext, db_manager: DatabaseMan
         return    
     await message.answer(f"Телефон {message.text} добавлен.")
     await state.clear()
-

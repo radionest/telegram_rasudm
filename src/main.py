@@ -23,9 +23,10 @@ dp = Dispatcher(db_manager=db_manager)
 dp.message.outer_middleware(GetUserMiddleware(db_manager=db_manager))
 dp.callback_query.outer_middleware(GetUserMiddleware(db_manager=db_manager))
 
+dp.include_router(common.router)
 dp.include_router(admin.router)
 dp.include_router(registration.router)
-dp.include_router(common.router)
+
 
 
 async def main() -> None:

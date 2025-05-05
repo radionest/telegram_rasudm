@@ -12,6 +12,8 @@ from states import RegisterUser
 from models import User
 from keyboards import create_menu
 from database import DatabaseManager
+from filters import active_only
+from registration import give_agreement
 
 router = Router()
 
@@ -20,10 +22,13 @@ router = Router()
 async def cmd_start(message: Message, state: FSMContext, user: User, bot: Bot) -> None:
     """Start command handler - register user if not registered"""
     await create_menu(bot=bot, is_admin=user.is_admin, user_id=user.id)
+    if not active_only(user):
+        await give_agreement(message, state)
 
-@router.message(Command('id'))
+
+@router.message(Command("id"))
 async def give_user_id(message: Message) -> None:
-    await message.answer(text=f'Ваш ID {message.from_user.id}')
+    await message.answer(text=f"Ваш ID {message.from_user.id}")
 
 
 @router.my_chat_member(
@@ -38,4 +43,3 @@ async def save_group(event: ChatMemberUpdated, db_manager: DatabaseManager):
 )
 async def delete_group(event: ChatMemberUpdated, db_manager: DatabaseManager):
     await db_manager.delete_channel(event.chat.id)
-

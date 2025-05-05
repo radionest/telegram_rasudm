@@ -71,7 +71,8 @@ async def register_user(
             """По такому номеру уже зарегистрирован другой пользователь.
             Мы не знаем как это произошло. Возможно у вас к этому номеру был привязан другой телеграмм-аккаунт.
             Подтвердите, что вы хотите зарегистрироваться в группе с этого аккаунта.
-            """
+            """,
+            reply_markup=get_agreement_kb()
         )
         await state.set_data({"phone": phone})
         await state.set_state(RegisterUser.waiting_phone_changed_user)
@@ -85,9 +86,9 @@ async def renew_user_phone(
     message: Message, state: FSMContext, db_manager: DatabaseManager, bot: Bot
 ):
     match message.text:
-        case "Да":
+        case "Согласен":
             await register_user_and_answer(message, state, db_manager, bot)
-        case "Нет":
+        case "Не согласен":
             await message.answer(
                 "Хорошо. Вы можете продолжать пользоваться группой с ранее зарегистрированного аккаунта."
             )
