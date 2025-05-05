@@ -13,7 +13,7 @@ from models import User
 from keyboards import create_menu
 from database import DatabaseManager
 from filters import active_only
-from registration import give_agreement
+from routers.registration import give_agreement
 
 router = Router()
 
