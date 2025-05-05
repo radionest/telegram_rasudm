@@ -132,3 +132,4 @@ async def delete_user(message: Message, state: FSMContext, db_manager: DatabaseM
     await user.delete_user(message.text, db_manager)
     await message.answer(f"Пользователь {message.text} удален.")
     await state.clear()
+

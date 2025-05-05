@@ -21,6 +21,10 @@ async def cmd_start(message: Message, state: FSMContext, user: User, bot: Bot) -
     """Start command handler - register user if not registered"""
     await create_menu(bot=bot, is_admin=user.is_admin, user_id=user.id)
 
+@router.message(Command('id'))
+async def give_user_id(message: Message) -> None:
+    await message.answer(text=f'Ваш ID {message.from_user.id}')
+
 
 @router.my_chat_member(
     ChatMemberUpdatedFilter(member_status_changed=IS_NOT_MEMBER >> IS_MEMBER)
@@ -34,3 +38,4 @@ async def save_group(event: ChatMemberUpdated, db_manager: DatabaseManager):
 )
 async def delete_group(event: ChatMemberUpdated, db_manager: DatabaseManager):
     await db_manager.delete_channel(event.chat.id)
+
