@@ -146,6 +146,7 @@ async def add_phone(message: Message, state: FSMContext, db_manager: DatabaseMan
         await excel.add_phone(message.text, db_manager)
     except excel.IncorrectPhoneFormat:
         await message.answer(f"Телефон нужно ввести в формате 89111111111")
+        return    
     await message.answer(f"Телефон {message.text} добавлен.")
     await state.clear()
 
