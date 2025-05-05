@@ -26,5 +26,7 @@ class AddAdmin(StatesGroup):
 class DeleteUser(StatesGroup):
     user_id_recieved = State()
 
+class AddPhone(StatesGroup):
+    phone_recieved = State()
 
-AddPhone = State()
+
