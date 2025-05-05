@@ -15,7 +15,7 @@ from loguru import logger
 from filters import admin_only
 from database import DatabaseManager
 from service.excel import add_phones_from_file
-from service import user
+from service import user, excel
 import keyboards as kb
 import states
 
@@ -131,5 +131,21 @@ async def delete_user_start(message: Message, state: FSMContext):
 async def delete_user(message: Message, state: FSMContext, db_manager: DatabaseManager):
     await user.delete_user(message.text, db_manager)
     await message.answer(f"Пользователь {message.text} удален.")
+    await state.clear()
+
+
+@router.message(Command("add_phone_to_whitelist"))
+async def add_phone_start(message: Message, state: FSMContext):
+    await state.set_state(states.DeleteUser.user_id_recieved)
+    await message.answer("Введите номер телефона пользователя.")
+
+
+@router.message(states.AddPhone)
+async def add_phone(message: Message, state: FSMContext, db_manager: DatabaseManager):
+    try:
+        await excel.add_phone(message.text, db_manager)
+    except excel.IncorrectPhoneFormat:
+        await message.answer(f"Телефон нужно ввести в формате 89111111111")
+    await message.answer(f"Телефон {message.text} добавлен.")
     await state.clear()
 

@@ -55,7 +55,12 @@ async def create_menu(bot: Bot, user_id: int, is_admin: bool) -> None:
                 BotCommand(
                     command="/delete_user",
                     description="Удалить пользователя.",
+                ),
+                BotCommand(
+                    command="/add_phone_to_whitelist",
+                    description="Добавить номер телефона.",
                 )
+
             ]
         )
     scope = BotCommandScopeChat(chat_id=user_id)

@@ -9,6 +9,7 @@ from models import PhoneWhiteList
 
 class ExcelParsingError(Exception): ...
 
+class IncorrectPhoneFormat(Exception): ...
 
 def parse_phone_number(phone: str | int) -> str | None:
     if isinstance(phone, int):
@@ -31,6 +32,15 @@ def get_phones_whitelist_from_xls(file) -> List[str]:
             ]
     raise ExcelParsingError("Cannot find phone column in the provided Excel file.")
 
+
+async def add_phone(
+        phone_number: int | str,
+        db_manager: DatabaseManager
+):
+    phone = parse_phone_number(phone_number)
+    if phone is None:
+        raise IncorrectPhoneFormat(f'Phone {phone_number} has incorrect format')
+    await db_manager.add_phone(int(phone[-10:]))
 
 async def add_phones_from_file(
     file, db_manager: DatabaseManager
