@@ -1,5 +1,8 @@
-class UltrabotError(Exception):
+class BotError(Exception):
     ...
 
-class RestrictedAccessError(UltrabotError):
+class RestrictedAccessError(BotError):
+    ...
+    
+class InvalidInputError(BotError):
     ...

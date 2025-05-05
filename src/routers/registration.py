@@ -32,6 +32,7 @@ async def give_agreement(message: Message, state: FSMContext):
     await state.set_state(RegisterUser.wait_agreement)
 
 
+@router.message(RegisterUser.wait_agreement, ~F.contact)
 @router.message(RegisterUser.wait_agreement, F.text == "Не согласен")
 async def ask_to_register(message: Message, state: FSMContext) -> None:
     """Start user registration process"""
@@ -49,6 +50,7 @@ async def register_user(
 ) -> None:
     """Register user"""
     phone = int(message.contact.phone_number[-10:])
+    await state.set_data({"phone": phone})
     user_id = message.from_user
     if not await is_phone_in_whitelist(phone, db_manager):
         logger.warning(f"""User with id {user_id} try to register on phone {phone}. \n
@@ -75,7 +77,6 @@ async def register_user(
         await state.set_state(RegisterUser.waiting_phone_changed_user)
         return
     else:
-        await bind_phone_to_user(user_id, phone, db_manager)
         await register_user_and_answer(message, state, db_manager, bot)
 
 

@@ -51,6 +51,10 @@ async def create_menu(bot: Bot, user_id: int, is_admin: bool) -> None:
                 BotCommand(
                     command="/add_admin",
                     description="Добавить администратора чата.",
+                ),
+                BotCommand(
+                    command="/delete_user",
+                    description="Удалить пользователя.",
                 )
             ]
         )

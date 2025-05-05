@@ -40,18 +40,18 @@ async def register_user(user_id: int, db_manager: DatabaseManager):
     await db_manager.activate_user(user_id)
 
 
-async def register_user_and_answer(
-    message: Message, state: FSMContext, db_manager: DatabaseManager, bot: Bot
-):
-    await register_user(message.from_user.id, db_manager)
-    await answer_registration_succes(message, state, db_manager, bot)
-
-
 async def bind_phone_to_user(user_id: int, phone_num: int, db_manager: DatabaseManager):
     await db_manager.bind_phone_to_user(user_id, phone_num)
 
 
-async def user_id_str_to_int(user_id: str) -> int:
-    
-    return int(user_id)
-        
+
+async def register_user_and_answer(
+    message: Message, state: FSMContext, db_manager: DatabaseManager, bot: Bot
+):  
+    state_data = await state.get_data()
+    await bind_phone_to_user(user_id=message.from_user.id,
+                             phone_num=state_data['phone'], 
+                             db_manager=db_manager)
+    await register_user(message.from_user.id, db_manager)
+    await answer_registration_succes(message, state, db_manager, bot)
+

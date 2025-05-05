@@ -63,7 +63,7 @@ class DatabaseManager:
             >>> db_manager = DatabaseManager()
         """
         self.engine = create_async_engine(settings.DATABASE_URL, echo=True)
-
+        
     async def get_user(self, user_id: int) -> Union[User, None]:
         """
         Get a user by their Telegram ID.
@@ -109,6 +109,28 @@ class DatabaseManager:
             await session.refresh(user)
             return user
 
+    async def delete_user(self, user_id: int) -> None:
+        """
+        Delete user from  database.
+
+        Args:
+            user_id: The Telegram user ID
+
+        Returns:
+            None
+
+        Examples:
+            >>> await db_manager.delete_user(12345678)
+        """
+        async with AsyncSession(self.engine) as session:
+            user = await session.get(User, user_id)
+            if user is None:
+                raise ItemNotFoundException(
+                    f"Cant delete user with id {user_id} because its not in database."
+                )
+            await session.delete(user)
+            await session.commit()
+
     async def bind_phone_to_user(self, user_id: int, phone_num: int) -> User:
         async with AsyncSession(self.engine) as session:
             user = await session.get(User, user_id)
@@ -116,7 +138,8 @@ class DatabaseManager:
             if not phone:
                 raise ItemNotFoundException("There is no phone {phone_num} in database")
             if not user:
-                user = await self.add_user(user_id)
+                await self.add_user(user_id)
+                user = await session.get(User, user_id)
             user.phone = phone
             await session.commit()
             await session.refresh(user)
