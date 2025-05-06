@@ -1,7 +1,7 @@
 from loguru import logger
 
 from aiogram import Router, F, Bot
-from aiogram.types import Message, CallbackQuery, ChatJoinRequest
+from aiogram.types import Message, CallbackQuery, ChatJoinRequest, ReplyKeyboardRemove
 from aiogram.filters import CommandStart, Command, StateFilter
 from aiogram.fsm.context import FSMContext
 
@@ -56,10 +56,12 @@ async def register_user(
         logger.warning(f"""User with id {user_id} try to register on phone {phone}. \n
                        No such phone in database.""")
         await message.answer(
-            """Такой номер не зарегистрирован. Если вы действующий член зайдите в личный кабинет на сайте общества.\n
-            Укажите ваш номер телефона в соответствующем поле. После этого обратитесь к администратору.
-            """
+            """Такой номер не зарегистрирован. \n
+            Если вы действующий член зайдите в личный кабинет на сайте общества. Укажите ваш номер телефона в соответствующем поле. После этого обратитесь к администратору.
+            """,
+            reply_markup=ReplyKeyboardRemove()
         )
+
         await state.clear()
         return
     if await is_another_user_registered(phone, db_manager):

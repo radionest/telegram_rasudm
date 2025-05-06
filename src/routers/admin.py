@@ -137,12 +137,15 @@ async def delete_user(message: Message, state: FSMContext, db_manager: DatabaseM
 @router.message(Command("add_phone_to_whitelist"))
 async def add_phone_start(message: Message, state: FSMContext):
     await state.set_state(states.AddPhone.phone_recieved)
-    await message.answer("Введите номер телефона пользователя.",
-                         reply_markup=kb.get_cancel_kb())
+    await message.answer(
+        "Введите номер телефона пользователя.", reply_markup=kb.get_cancel_kb()
+    )
 
 
 @router.message(states.AddPhone.phone_recieved)
-async def add_phone_to_whitelist(message: Message, state: FSMContext, db_manager: DatabaseManager):
+async def add_phone_to_whitelist(
+    message: Message, state: FSMContext, db_manager: DatabaseManager
+):
     try:
         await excel.add_phone(message.text, db_manager)
     except excel.IncorrectPhoneFormat:
