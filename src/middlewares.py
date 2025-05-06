@@ -1,8 +1,10 @@
 from typing import Callable, Any, Awaitable, Union
+from loguru import logger
 
 from aiogram import BaseMiddleware
 from aiogram.dispatcher.middlewares.data import MiddlewareData
 from aiogram.types import Message, CallbackQuery
+
 
 from database import DatabaseManager
 from models import User
@@ -69,14 +71,6 @@ class GetUserMiddleware(BaseMiddleware):
 
 
 class MakeMenuMiddleware(BaseMiddleware):
-    """
-    Middleware that fetches the user from the database and adds it to the handler data.
-
-    This middleware intercepts incoming events (messages or callback queries),
-    extracts the user ID from the event, fetches the corresponding user record
-    from the database, and adds it to the handler's data dictionary.
-    """
-
     def __init__(self, db_manager: DatabaseManager) -> None:
         """
         Initialize the middleware with a database manager.
@@ -96,6 +90,14 @@ class MakeMenuMiddleware(BaseMiddleware):
         data: UserMiddlewareData,  # type: ignore
     ) -> Any:
         result = await handler(event, data)
+
         if user := data.get("user"):
             await create_menu(bot=data["bot"], user_id=user.id, is_admin=user.is_admin)
+            logger.info("Menu updated.")
+        elif user := event.from_user:
+            await create_menu(
+                bot=data["bot"],
+                user_id=user.id,
+                is_admin=await self.db.is_admin(user.id),
+            )
         return result
