@@ -21,7 +21,8 @@ router = Router()
 @router.message(CommandStart())
 async def cmd_start(message: Message, state: FSMContext, user: User, bot: Bot) -> None:
     """Start command handler - register user if not registered"""
-    await create_menu(bot=bot, is_admin=user.is_admin, user_id=user.id)
+    if user:
+        await create_menu(bot=bot, is_admin=user.is_admin, user_id=user.id)
     if not await active_only(user):
         await give_agreement(message, state)
 

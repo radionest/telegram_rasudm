@@ -6,6 +6,7 @@ from aiogram.types import Message, CallbackQuery
 
 from database import DatabaseManager
 from models import User
+from keyboards import create_menu
 
 
 class UserMiddlewareData(MiddlewareData):
@@ -65,3 +66,36 @@ class GetUserMiddleware(BaseMiddleware):
             data["user"] = None
 
         return await handler(event, data)
+
+
+class MakeMenuMiddleware(BaseMiddleware):
+    """
+    Middleware that fetches the user from the database and adds it to the handler data.
+
+    This middleware intercepts incoming events (messages or callback queries),
+    extracts the user ID from the event, fetches the corresponding user record
+    from the database, and adds it to the handler's data dictionary.
+    """
+
+    def __init__(self, db_manager: DatabaseManager) -> None:
+        """
+        Initialize the middleware with a database manager.
+
+        Args:
+            db_manager: Database manager instance used to fetch user data
+        """
+        self.db = db_manager
+        super().__init__()
+
+    async def __call__(
+        self,
+        handler: Callable[  # type: ignore
+            [Union[Message, CallbackQuery], UserMiddlewareData], Awaitable[Any]
+        ],
+        event: Union[Message, CallbackQuery],  # type: ignore
+        data: UserMiddlewareData,  # type: ignore
+    ) -> Any:
+        result = await handler(event, data)
+        if user := data.get("user"):
+            await create_menu(bot=data["bot"], user_id=user.id, is_admin=user.is_admin)
+        return result

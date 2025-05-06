@@ -7,7 +7,7 @@ from aiogram import Bot, Dispatcher
 from service.logger import setup_logging, logger
 from database import DatabaseManager
 from settings import settings
-from middlewares import GetUserMiddleware
+from middlewares import GetUserMiddleware, MakeMenuMiddleware
 from routers import admin, registration, common
 
 setup_logging(settings.LOG_LEVEL)
@@ -22,6 +22,8 @@ dp = Dispatcher(db_manager=db_manager)
 
 dp.message.outer_middleware(GetUserMiddleware(db_manager=db_manager))
 dp.callback_query.outer_middleware(GetUserMiddleware(db_manager=db_manager))
+dp.message.middleware(MakeMenuMiddleware(db_manager=db_manager))
+
 
 dp.include_router(common.router)
 dp.include_router(admin.router)
